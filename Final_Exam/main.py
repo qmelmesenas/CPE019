@@ -23,4 +23,3 @@ if uploaded_file is not None:
     prediction = model.predict(img_array)
     class_index = np.argmax(prediction)
     st.write(f"Predicted class: {class_names[class_index]}")
-
