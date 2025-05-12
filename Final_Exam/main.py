@@ -6,13 +6,10 @@ import numpy as np
 from PIL import Image
 import os
 
-# Google Drive link for the model
-model_url = 'https://drive.google.com/file/d/1kIo9dns6-enGso6fHaIJEYDjJcQ3YBCg/view?usp=sharing'
-model_path = 'final_garbage_model.h5'
-
-# Download the model from Google Drive if not already downloaded
+# Download model if not already present
+model_path = "final_garbage_model.h5"
 if not os.path.exists(model_path):
-    gdown.download(model_url, model_path, quiet=False)
+    gdown.download("https://drive.google.com/uc?id=1kIo9dns6-enGso6fHaIJEYDjJcQ3YBCg", model_path, quiet=False, fuzzy=True)
 
 # Load the model
 model = load_model(model_path)
