@@ -1,11 +1,23 @@
 import streamlit as st
+import gdown
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 import numpy as np
 from PIL import Image
+import os
 
-# Load model
-model = load_model(r"C:\Users\Mary Elizabeth\Documents\emtech2\final_garbage_model.h5")
+# Google Drive link for the model
+model_url = 'https://drive.google.com/file/d/1kIo9dns6-enGso6fHaIJEYDjJcQ3YBCg/view?usp=sharing'
+model_path = 'final_garbage_model.h5'
+
+# Download the model from Google Drive if not already downloaded
+if not os.path.exists(model_path):
+    gdown.download(model_url, model_path, quiet=False)
+
+# Load the model
+model = load_model(model_path)
+
+# Class names
 class_names = ['battery','biological','brown-glass','cardboard','clothes','green-glass','metal','paper','plastic','shoes','trash','white-glass']  
 
 st.title("Garbage Classifier")
