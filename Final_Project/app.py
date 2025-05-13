@@ -7,12 +7,9 @@ from tensorflow.keras.models import load_model
 import gdown
 
 # Google Drive link for the model
-model_url = 'https://drive.google.com/file/d/1QhVMT2xfPV81uAzHzE4gBrg6c8ovhXqW'
 model_path = 'violence_detection_cnn.h5'
-
-# Download the model from Google Drive if not already downloaded
 if not os.path.exists(model_path):
-    gdown.download(model_url, model_path, quiet=False)
+    gdown.download("https://drive.google.com/file/d/1QhVMT2xfPV81uAzHzE4gBrg6c8ovhXqW", model_path, quiet=False, fuzzy=True)
 
 # Load the model
 model = load_model(model_path)
