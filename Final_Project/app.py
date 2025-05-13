@@ -4,6 +4,7 @@ import cv2
 import tempfile
 import os
 from tensorflow.keras.models import load_model
+<<<<<<< HEAD
 import gdown
 
 # Google Drive link for the model
@@ -16,6 +17,11 @@ if not os.path.exists(model_path):
 
 # Load the model
 model = load_model(model_path)
+=======
+
+# Load trained model
+model = load_model("violence_detection_cnn.h5")
+>>>>>>> f206b48 (Add violence detection model and Streamlit app)
 
 # Frame extraction function
 def extract_frames(video_path, skip=7, max_frames=30):
