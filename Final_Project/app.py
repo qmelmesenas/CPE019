@@ -40,7 +40,7 @@ def predict_video(frames):
         return "No frames extracted."
     preds = model.predict(frames)
     avg_pred = np.mean(preds)
-    label = "Non-Violent" if avg_pred > 0.5 else "Violent"
+    label = "Violent" if avg_pred > 0.5 else "Non-Violent"
     return f"Prediction: **{label}** ({avg_pred:.2f} confidence)"
 
 # Streamlit UI
