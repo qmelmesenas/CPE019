@@ -4,7 +4,6 @@ import cv2
 import tempfile
 import os
 from tensorflow.keras.models import load_model
-<<<<<<< HEAD
 import gdown
 
 # Google Drive link for the model
