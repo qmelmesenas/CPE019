@@ -9,7 +9,7 @@ import gdown
 # Google Drive link for the model
 model_path = 'violence_detection_model.h5'
 if not os.path.exists(model_path):
-    gdown.download("https://drive.google.com/file/d/1QhVMT2xfPV81uAzHzE4gBrg6c8ovhXqW", model_path, quiet=False, fuzzy=True)
+    gdown.download(id="1QhVMT2xfPV81uAzHzE4gBrg6c8ovhXqW", output=model_path, quiet=False)
 
 # Load the model
 model = load_model(model_path)
