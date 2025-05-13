@@ -4,9 +4,18 @@ import cv2
 import tempfile
 import os
 from tensorflow.keras.models import load_model
+import gdown
 
-# Load trained model
-model = load_model("violence_detection_cnn.h5")
+# Google Drive link for the model
+model_url = 'https://drive.google.com/file/d/1QhVMT2xfPV81uAzHzE4gBrg6c8ovhXqW'
+model_path = 'violence_detection_cnn.h5'
+
+# Download the model from Google Drive if not already downloaded
+if not os.path.exists(model_path):
+    gdown.download(model_url, model_path, quiet=False)
+
+# Load the model
+model = load_model(model_path)
 
 # Frame extraction function
 def extract_frames(video_path, skip=7, max_frames=30):
