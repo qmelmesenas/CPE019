@@ -14,15 +14,15 @@ if not os.path.exists(model_path):
 model = load_model(model_path)
 
 # Extract frames and return frames + FPS
-def extract_frames(video_path, skip=7, max_frames=30):
+def extract_frames(video_path, skip=7, max_frames=100):
     frames = []
     cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS)
-    
+
     if not cap.isOpened():
         st.error("⚠️ Could not open video.")
         return [], 0
-    
+
     frame_count = 0
     while True:
         ret, frame = cap.read()
@@ -36,19 +36,26 @@ def extract_frames(video_path, skip=7, max_frames=30):
     cap.release()
     return np.array(frames), fps
 
-# Predict video violence and return result, violent frames, and timestamps
-def predict_video(frames, original_fps, skip):
-    if len(frames) == 0:
-        return "No frames extracted.", [], []
+# Predict video violence using frame sequences
+def predict_video(frames, original_fps, skip, sequence_length=20):
+    if len(frames) < sequence_length:
+        return "Video too short to extract full sequence.", [], []
 
-    preds = model.predict(frames)
+    sequences = []
+    for i in range(len(frames) - sequence_length + 1):
+        clip = frames[i:i + sequence_length]
+        sequences.append(clip)
+
+    sequences = np.array(sequences)  
+    preds = model.predict(sequences)
+
     violent_indices = [i for i, p in enumerate(preds) if p > 0.5]
     avg_pred = np.mean(preds)
     label = "Violent" if avg_pred > 0.5 else "Non-Violent"
 
-    # Get violent frames and their timestamps
-    violent_frames = [frames[i] for i in violent_indices]
-    timestamps = [round(i * skip / original_fps, 2) for i in violent_indices]
+    # Use the center frame of each detected violent sequence
+    violent_frames = [frames[i + sequence_length // 2] for i in violent_indices]
+    timestamps = [round((i + sequence_length // 2) * skip / original_fps, 2) for i in violent_indices]
 
     result_text = f"Prediction: **{label}** ({avg_pred:.2f} confidence)"
     return result_text, violent_frames, timestamps
@@ -84,4 +91,3 @@ if uploaded_file is not None:
                 st.image(frame_rgb, caption=f"Frame {i+1} at {time_sec} sec", use_container_width=True)
         else:
             st.info("✅ No specific violent frames detected.")
-
