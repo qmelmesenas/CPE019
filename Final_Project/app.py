@@ -29,7 +29,7 @@ def extract_frames(video_path, skip=7, max_frames=100):
         if not ret or len(frames) >= max_frames:
             break
         if frame_count % skip == 0:
-            resized = cv2.resize(frame, (128, 128))
+            resized = cv2.resize(frame, (64, 64))
             resized = resized.astype('float32') / 255.0
             frames.append(resized)
         frame_count += 1
@@ -37,7 +37,7 @@ def extract_frames(video_path, skip=7, max_frames=100):
     return np.array(frames), fps
 
 # Predict video violence using frame sequences
-def predict_video(frames, original_fps, skip, sequence_length=20):
+def predict_video(frames, original_fps, skip, sequence_length=16):
     if len(frames) < sequence_length:
         return "Video too short to extract full sequence.", [], []
 
