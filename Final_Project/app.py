@@ -6,20 +6,20 @@ import os
 from tensorflow.keras.models import load_model
 import gdown
 
-FRAME_SIZE = (64, 64)      
-SEQUENCE_LENGTH = 16         
+# Constants
+FRAME_SIZE = (128, 128)  # Changed to match model input
 SKIP_FRAMES = 3
 MAX_FRAMES = 100
 
-#Download model if not present
+# Download model if not present
 model_path = 'violence_detection_model.h5'
 if not os.path.exists(model_path):
     gdown.download("https://drive.google.com/uc?id=1KAZdlLzkrLRi5BoTE2EatRqH30MiU_TN", output=model_path, quiet=False)
 
-#Load the model
+# Load the model
 model = load_model(model_path)
 
-#Extract frames from video
+# Extract frames from video
 def extract_frames(video_path, skip=SKIP_FRAMES, max_frames=MAX_FRAMES):
     frames = []
     cap = cv2.VideoCapture(video_path)
@@ -42,26 +42,18 @@ def extract_frames(video_path, skip=SKIP_FRAMES, max_frames=MAX_FRAMES):
     cap.release()
     return np.array(frames), fps
 
-#Predict using frame sequences 
-def predict_video(frames, original_fps, skip, sequence_length=SEQUENCE_LENGTH):
-    if len(frames) < sequence_length:
-        return "Video too short to extract full sequence.", [], []
+# Predict using individual frames (not sequences)
+def predict_video(frames, original_fps, skip):
+    if len(frames) == 0:
+        return "⚠️ No frames extracted from the video.", [], []
 
-    sequences = []
-    for i in range(len(frames) - sequence_length + 1):
-        clip = frames[i:i + sequence_length]
-        sequences.append(clip)
-
-    sequences = np.array(sequences)  
-    preds = model.predict(sequences)
-
+    preds = model.predict(frames, verbose=0)  # Shape: (num_frames, 1)
     violent_indices = [i for i, p in enumerate(preds) if p > 0.5]
     avg_pred = np.mean(preds)
     label = "Violent" if avg_pred > 0.5 else "Non-Violent"
 
-    # Use center frame of each detected violent sequence
-    violent_frames = [frames[i + sequence_length // 2] for i in violent_indices]
-    timestamps = [round((i + sequence_length // 2) * skip / original_fps, 2) for i in violent_indices]
+    violent_frames = [frames[i] for i in violent_indices]
+    timestamps = [round(i * skip / original_fps, 2) for i in violent_indices]
 
     result_text = f"Prediction: **{label}** ({avg_pred:.2f} confidence)"
     return result_text, violent_frames, timestamps
